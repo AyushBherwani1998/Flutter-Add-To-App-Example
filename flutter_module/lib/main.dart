@@ -40,9 +40,7 @@ class _MyAppState extends State<MyApp> {
                       Icons.delete,
                       color: Colors.black,
                     ),
-                    onPressed: () {
-                      removeQuoteFromList(favoriteQuotes[index]);
-                    },
+                    onPressed: () => removeQuoteFromList(favoriteQuotes[index]),
                   ),
                 ));
               })
@@ -55,31 +53,18 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> _receiveQuotes(MethodCall call) async {
     try {
-      print(call.method);
-
       if (call.method == "getQuotes") {
-        var data = call.arguments;
-        print(data.runtimeType);
-        setState(() {
-          favoriteQuotes = List<String>.from(data);
-        });
-        print(favoriteQuotes);
+        setState(() => favoriteQuotes = List<String>.from(call.arguments));
       }
     } on PlatformException catch (e) {
-      //platform may not able to send proper data.
+          
     }
   }
 
   Future<void> removeQuoteFromList(String quote)async{
-    Map args = Map();
-    args['quote'] = quote;
     try{
-      final bool = await platform.invokeMethod('removeQuote',args);
-      print(bool);
-      if(bool){
-       setState(() {
-         favoriteQuotes.remove(quote);
-       });
+      if(await platform.invokeMethod('removeQuote',{"quote":quote})){
+       setState(() => favoriteQuotes.remove(quote));
       }
     }on PlatformException catch(e){
       print(e);
